@@ -1,0 +1,9 @@
+{
+  "name": "imlazy",
+  "version": "0.1.0",
+  "description": "Adaptive Agent Workflow - Create and run your own agent workflows",
+  "author": {
+    "name": "raiz"
+  },
+  "keywords": ["workflow", "agent", "automation", "sdlc", "adaptive"]
+}

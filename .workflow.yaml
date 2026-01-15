@@ -1,0 +1,51 @@
+# imlazy Workflow Configuration
+# Define your agent workflows here
+
+workflows:
+  low:
+    description: "간단한 작업 - 빠른 실행"
+    agents:
+      - name: requirements-analyst
+        skills:
+          - requirements-analysis
+      - name: developer
+        skills:
+          - implementation
+
+  medium:
+    description: "중간 복잡도 - 분석 포함"
+    agents:
+      - name: requirements-analyst
+        skills:
+          - requirements-analysis
+      - name: code-analyst
+        skills:
+          - code-analysis
+      - name: developer
+        skills:
+          - implementation
+      - name: reviewer
+        skills:
+          - code-review
+
+  high:
+    description: "복잡한 작업 - 전체 SDLC"
+    agents:
+      - name: requirements-analyst
+        skills:
+          - requirements-analysis
+      - name: code-analyst
+        skills:
+          - code-analysis
+      - name: architect
+        skills:
+          - system-design
+      - name: developer
+        skills:
+          - implementation
+          - testing
+      - name: reviewer
+        skills:
+          - code-review
+
+# Custom workflows will be added below by /imlazy:create-workflow
