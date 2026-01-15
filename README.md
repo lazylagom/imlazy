@@ -1,16 +1,18 @@
 # imlazy
 
-> **Stay Lazy, Act Crazy**
+> **Stay Lazy, Think Crazy**
 
-Simple agent workflow plugin for Claude Code. Run predefined SDLC-based agent workflows for development tasks.
+개발자처럼 사고하는 인지 모드 기반 에이전트 시스템. Claude Code 플러그인.
 
-## Overview
+## 핵심 철학
 
-imlazy provides structured multi-agent workflows for software development. Choose a complexity level and let the agents handle the rest.
+기존 SDLC 워터폴 방식 대신 **개발자의 실제 사고 패턴**을 반영:
+
+- **가설-검증 루프**: 추측하고, 테스트하고, 수정
+- **점진적 이해**: 필요한 만큼만 탐색
+- **적응형 플로우**: 상황에 따라 단계 스킵/반복
 
 ## Installation
-
-Copy the plugin to your project or test directly:
 
 ```bash
 claude --plugin-dir /path/to/imlazy
@@ -18,52 +20,100 @@ claude --plugin-dir /path/to/imlazy
 
 ## Commands
 
-| Command | Description | Agents |
-|---------|-------------|--------|
-| `/imlazy:on` | Activate with greeting | - |
-| `/imlazy:low` | Quick workflow | 2 agents |
-| `/imlazy:medium` | Standard workflow | 4 agents |
-| `/imlazy:high` | Full SDLC | 5 agents |
+### 자동 플로우
+| Command | Description |
+|---------|-------------|
+| `/imlazy:think <task>` | 적응형 인지 워크플로우 (권장) |
 
-## Workflows
+### 개별 모드
+| Command | Description | Model |
+|---------|-------------|-------|
+| `/imlazy:orient <task>` | 문제 이해, 가설 형성 | Sonnet |
+| `/imlazy:explore <area>` | 점진적 코드 탐색 | Haiku |
+| `/imlazy:theorize <goal>` | 해결책 가설 수립 | Opus |
+| `/imlazy:execute <task>` | 단계별 구현 + 검증 | Sonnet |
+| `/imlazy:verify <what>` | 원래 의도와 비교 검증 | Sonnet |
 
-### Low (2 agents)
-**requirements-analyst** → **developer**
+## 인지 모드 시스템
 
-Best for: Simple tasks, quick fixes, small features
+```
+ORIENT → EXPLORE → THEORIZE → EXECUTE → VERIFY
+   ↑         ↑         ↑         ↑         ↓
+   └─────────┴─────────┴─────────┴─────────┘
+           (언제든 루프백 가능)
+```
 
-### Medium (4 agents)
-**requirements-analyst** → **code-analyst** → **developer** → **reviewer**
+### ORIENT (이해)
+- "사용자가 진짜 원하는 게 뭐지?"
+- 가설 형성, 성공의 모습 정의
+- Critical Unknown 식별
 
-Best for: Standard features, bug fixes with investigation
+### EXPLORE (탐색)
+- 필요한 만큼만 점진적 탐색
+- 패턴 발견 시 멈춤
+- 전체 분석 X, 충분한 이해 O
 
-### High (5 agents)
-**requirements-analyst** → **code-analyst** → **architect** → **developer** → **reviewer**
+### THEORIZE (가설)
+- "X를 하면 Y가 될 것이다"
+- Minimal Viable Test 정의
+- 실패 시 대안 준비
 
-Best for: Complex features, architectural changes, major refactoring
+### EXECUTE (실행)
+- 한 번에 하나, 바로 확인
+- 에러 = 정보 (무시 X)
+- 막히면 이전 모드로 복귀
 
-## Agents
+### VERIFY (검증)
+- ORIENT의 "성공 모습"과 비교
+- 적대적 테스트 (깨뜨리기 시도)
+- Gap 발견 시 EXECUTE로 복귀
 
-| Agent | Role | Model |
-|-------|------|-------|
-| requirements-analyst | Analyze and clarify requirements | Sonnet |
-| code-analyst | Explore and analyze existing codebase | Sonnet |
-| architect | Design solution architecture | Opus |
-| developer | Implement code and tests | Sonnet |
-| reviewer | Review code quality and correctness | Sonnet |
+## 인사이트 체인
 
-## Skills
+모드 간 **간결한 인사이트**로 맥락 전달:
 
-Each agent has access to domain-specific knowledge:
+```markdown
+## Insight: 세션 기반 인증 적합
+Type: hypothesis
+Confidence: medium
+Content: JWT보다 세션이 단순. express-session 설치됨.
+Source: EXPLORE에서 package.json 확인
+```
 
-| Skill | Description |
-|-------|-------------|
-| requirements-analysis | Requirements gathering, MoSCoW prioritization |
-| code-analysis | Codebase exploration, pattern recognition |
-| system-design | Architecture patterns, component design |
-| implementation | Code structure, coding best practices |
-| testing | Test strategies, TDD practices |
-| code-review | Quality review, security assessment |
+- 인사이트당 최대 3문장
+- 상세 문서 X, 핵심만 O
+
+## 사용 예시
+
+```
+# 자동 플로우 (권장)
+/imlazy:think 사용자 인증 추가
+
+# 탐색만 필요할 때
+/imlazy:explore src/auth
+
+# 가설 수립만
+/imlazy:theorize 캐싱 전략
+
+# 구현 + 검증
+/imlazy:execute passport.js 미들웨어 추가
+/imlazy:verify 인증 기능
+```
+
+## 플로우 예시
+
+### 단순 버그 수정
+```
+ORIENT → EXPLORE → EXECUTE → VERIFY
+(THEORIZE 스킵 - 원인 명확)
+```
+
+### 복잡 기능 추가
+```
+ORIENT → EXPLORE → THEORIZE → EXECUTE(실패)
+  → EXPLORE(추가 탐색) → THEORIZE(수정)
+  → EXECUTE → VERIFY
+```
 
 ## Project Structure
 
@@ -72,49 +122,32 @@ imlazy/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   ├── on.md
-│   ├── low.md
-│   ├── medium.md
-│   └── high.md
+│   ├── think.md          # 자동 적응형 플로우
+│   ├── orient.md          # 개별 모드
+│   ├── explore.md
+│   ├── theorize.md
+│   ├── execute.md
+│   └── verify.md
 ├── agents/
-│   ├── requirements-analyst.md
-│   ├── code-analyst.md
-│   ├── architect.md
-│   ├── developer.md
-│   └── reviewer.md
+│   ├── orient.md          # 이해 에이전트
+│   ├── explore.md         # 탐색 에이전트
+│   ├── theorize.md        # 가설 에이전트
+│   ├── execute.md         # 실행 에이전트
+│   └── verify.md          # 검증 에이전트
 ├── skills/
-│   ├── requirements-analysis/
-│   ├── code-analysis/
-│   ├── system-design/
-│   ├── implementation/
-│   ├── testing/
-│   └── code-review/
+│   └── insight-chain/     # 인사이트 체인 시스템
 └── hooks/
-    ├── hooks.json
-    └── scripts/
-        └── init-session.sh
+    └── ...
 ```
 
-## Usage
+## vs 기존 SDLC 워크플로우
 
-```
-# Quick task
-/imlazy:low Fix the typo in login validation
-
-# Standard development
-/imlazy:medium Add user profile page
-
-# Complex feature
-/imlazy:high Implement user authentication system
-```
-
-## How It Works
-
-1. You invoke a workflow command with a task description
-2. Each agent in the sequence executes in order
-3. Agents read their role definition and skill knowledge
-4. Each agent receives context from previous agents
-5. Final summary provided after all agents complete
+| 기존 | 새로운 |
+|------|--------|
+| 고정 5단계 순차 실행 | 적응형 루프백/스킵 |
+| 템플릿 채우기 | 실제 사고 과정 |
+| 상세 문서 전달 | 간결한 인사이트 |
+| FR-1, NFR-1 번호 매기기 | 가설과 증거 |
 
 ## License
 
