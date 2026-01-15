@@ -1,56 +1,80 @@
 ---
-description: Execute medium complexity workflow (standard tasks)
+description: Standard task execution (4 agents)
 argument-hint: <task-description>
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TodoWrite
 ---
 
-# imlazy Medium Complexity Workflow
+# imlazy Standard Workflow
 
-Execute a medium complexity workflow for standard development tasks.
+Execute a 4-agent workflow for standard development tasks.
 
 ## Task
 $ARGUMENTS
 
-## Workflow Execution
+---
 
-1. Read the workflow configuration from `${CLAUDE_PLUGIN_ROOT}/.workflow.yaml`
-2. Find the `medium` workflow definition
-3. Execute agents sequentially as defined in the workflow
+## Workflow: 4 Agents
 
-## Execution Steps
+### Agent 1: Requirements Analyst
 
-### Step 1: Requirements Analyst
-Use the Task tool to launch the `requirements-analyst` agent with:
-- The user's task: "$ARGUMENTS"
-- Skills to use: requirements-analysis
-- Save output to `.imlazy/context/{session}/01-requirements-analyst.md`
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/requirements-analyst.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/requirements-analysis/SKILL.md
+```
 
-### Step 2: Code Analyst
-Use the Task tool to launch the `code-analyst` agent with:
-- The requirements from Step 1
-- Skills to use: code-analysis
-- Save output to `.imlazy/context/{session}/02-code-analyst.md`
+Use Task tool with `subagent_type: general-purpose`:
+- Include agent system prompt + skill knowledge
+- Task: $ARGUMENTS
+- Analyze requirements and clarify scope
 
-### Step 3: Developer
-Use the Task tool to launch the `developer` agent with:
-- The requirements and code analysis from previous steps
-- Skills to use: implementation
-- Save output to `.imlazy/context/{session}/03-developer.md`
+---
 
-### Step 4: Reviewer
-Use the Task tool to launch the `reviewer` agent with:
-- All previous context
-- Skills to use: code-review
-- Save output to `.imlazy/context/{session}/04-reviewer.md`
+### Agent 2: Code Analyst
 
-## Context Management
-- Create session directory: `.imlazy/context/{timestamp}/`
-- Each agent saves their output to the context directory
-- Pass previous agent's output to the next agent
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/code-analyst.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/code-analysis/SKILL.md
+```
+
+Use Task tool with `subagent_type: general-purpose`:
+- Include agent system prompt + skill knowledge
+- Include Requirements Analyst's output
+- Analyze existing codebase for relevant patterns and impact areas
+
+---
+
+### Agent 3: Developer
+
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/developer.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/implementation/SKILL.md
+```
+
+Use Task tool with `subagent_type: general-purpose`:
+- Include agent system prompt + skill knowledge
+- Include previous agents' outputs (requirements + code analysis)
+- Implement the solution
+
+---
+
+### Agent 4: Reviewer
+
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/reviewer.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/code-review/SKILL.md
+```
+
+Use Task tool with `subagent_type: general-purpose`:
+- Include agent system prompt + skill knowledge
+- Include all previous outputs
+- Review the implementation for quality and correctness
+
+---
 
 ## Completion
-After all agents complete, provide a summary of:
-- Requirements analyzed
-- Code analysis findings
-- Implementation details
-- Review feedback and any issues found
+
+After all 4 agents complete, provide a summary:
+- Requirements analysis findings
+- Code analysis insights
+- Implementation summary
+- Review results and any issues found

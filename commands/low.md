@@ -1,43 +1,60 @@
 ---
-description: Execute low complexity workflow (quick tasks)
+description: Quick task execution (2 agents)
 argument-hint: <task-description>
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TodoWrite
 ---
 
-# imlazy Low Complexity Workflow
+# imlazy Quick Workflow
 
-Execute a low complexity workflow for quick, simple tasks.
+Execute a quick 2-agent workflow for simple tasks.
 
 ## Task
 $ARGUMENTS
 
-## Workflow Execution
+---
 
-1. Read the workflow configuration from `${CLAUDE_PLUGIN_ROOT}/.workflow.yaml`
-2. Find the `low` workflow definition
-3. Execute agents sequentially as defined in the workflow
+## Workflow: 2 Agents
 
-## Execution Steps
+### Agent 1: Requirements Analyst
 
-### Step 1: Requirements Analyst
-Use the Task tool to launch the `requirements-analyst` agent with:
-- The user's task: "$ARGUMENTS"
-- Skills to use: requirements-analysis
-- Save output to `.imlazy/context/{session}/01-requirements-analyst.md`
+First, read the agent definition and skill, then execute:
 
-### Step 2: Developer
-Use the Task tool to launch the `developer` agent with:
-- The requirements from Step 1
-- Skills to use: implementation
-- Save output to `.imlazy/context/{session}/02-developer.md`
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/requirements-analyst.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/requirements-analysis/SKILL.md
+```
 
-## Context Management
-- Create session directory: `.imlazy/context/{timestamp}/`
-- Each agent saves their output to the context directory
-- Pass previous agent's output to the next agent
+Use Task tool with `subagent_type: general-purpose`:
+- Include the agent system prompt
+- Include the skill knowledge
+- Task: $ARGUMENTS
+- Ask the agent to analyze requirements and clarify scope
+
+Save the output mentally - you'll pass it to the next agent.
+
+---
+
+### Agent 2: Developer
+
+Read the agent definition and skill:
+
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/developer.md
+Read: ${CLAUDE_PLUGIN_ROOT}/skills/implementation/SKILL.md
+```
+
+Use Task tool with `subagent_type: general-purpose`:
+- Include the agent system prompt
+- Include the skill knowledge
+- Include the Requirements Analyst's output as context
+- Task: $ARGUMENTS
+- Ask the agent to implement the solution
+
+---
 
 ## Completion
-After all agents complete, provide a summary of:
-- What was analyzed
-- What was implemented
-- Any follow-up recommendations
+
+After both agents complete, provide a summary:
+- What the Requirements Analyst found
+- What the Developer implemented
+- Any follow-up actions needed

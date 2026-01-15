@@ -21,7 +21,7 @@ description: |
   </commentary>
   </example>
 
-model: inherit
+model: opus
 color: green
 tools: ["Read", "Grep", "Glob", "Write"]
 ---

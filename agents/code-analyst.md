@@ -21,7 +21,7 @@ description: |
   </commentary>
   </example>
 
-model: inherit
+model: sonnet
 color: blue
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---
