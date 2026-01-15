@@ -14,8 +14,34 @@
 
 ## Installation
 
+### Marketplace (권장)
+
+Claude Code에서:
+```
+# 마켓플레이스에서 플러그인 추가
+/plugin marketplace add lazylagom/imlazy
+
+# 플러그인 설치
+/plugin install imlazy
+```
+
+### 수동 설치
+
+개발/테스트 목적:
 ```bash
+# 특정 디렉토리에서 플러그인 로드
 claude --plugin-dir /path/to/imlazy
+
+# 또는 ~/.claude/plugins에 복사
+cp -r imlazy ~/.claude/plugins/
+```
+
+### 설치 확인
+
+Claude Code에서:
+```
+# 설치된 플러그인 목록
+/plugin list
 ```
 
 ## Commands
@@ -137,8 +163,22 @@ imlazy/
 ├── skills/
 │   └── insight-chain/     # 인사이트 체인 시스템
 └── hooks/
-    └── ...
+    ├── hooks.json         # Hook 설정
+    └── scripts/
+        ├── auto-formatter.sh   # 파일 저장 시 자동 포맷
+        ├── bash-validator.py   # 위험 명령어 차단
+        └── file-protector.py   # 민감 파일 보호
 ```
+
+## Hooks
+
+자동화된 안전장치:
+
+| Hook | 동작 | 설명 |
+|------|------|------|
+| **auto-formatter** | PostToolUse | prettier/black 자동 실행 |
+| **bash-validator** | PreToolUse | `rm -rf /`, `git push -f` 차단 |
+| **file-protector** | PreToolUse | `.env`, `*.lock` 편집 차단 |
 
 ## vs 기존 SDLC 워크플로우
 
