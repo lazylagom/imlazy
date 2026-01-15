@@ -25,17 +25,6 @@ Claude Code에서:
 /plugin install imlazy
 ```
 
-### 수동 설치
-
-개발/테스트 목적:
-```bash
-# 특정 디렉토리에서 플러그인 로드
-claude --plugin-dir /path/to/imlazy
-
-# 또는 ~/.claude/plugins에 복사
-cp -r imlazy ~/.claude/plugins/
-```
-
 ### 설치 확인
 
 Claude Code에서:
