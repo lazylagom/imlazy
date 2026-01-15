@@ -19,7 +19,7 @@
 Claude Code에서:
 ```
 # 마켓플레이스에서 플러그인 추가
-/plugin marketplace add lazylagom/imlazy
+/plugin marketplace add lazylagom/lazy-marketplace
 
 # 플러그인 설치
 /plugin install imlazy
