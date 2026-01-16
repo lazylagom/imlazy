@@ -2,131 +2,131 @@
 
 > **Stay Lazy, Think Crazy**
 
-개발자처럼 사고하는 인지 모드 기반 에이전트 시스템. Claude Code 플러그인.
+A cognitive mode-based agent system that thinks like a developer. Claude Code plugin.
 
-## 핵심 철학
+## Core Philosophy
 
-기존 SDLC 워터폴 방식 대신 **개발자의 실제 사고 패턴**을 반영:
+Instead of traditional SDLC waterfall approaches, this reflects **how developers actually think**:
 
-- **가설-검증 루프**: 추측하고, 테스트하고, 수정
-- **점진적 이해**: 필요한 만큼만 탐색
-- **적응형 플로우**: 상황에 따라 단계 스킵/반복
+- **Hypothesis-Verification Loop**: Guess, test, fix
+- **Progressive Understanding**: Explore only as much as needed
+- **Adaptive Flow**: Skip/repeat phases based on context
 
 ## Installation
 
-### Marketplace (권장)
+### Marketplace (Recommended)
 
-Claude Code에서:
+In Claude Code:
 ```
-# 마켓플레이스에서 플러그인 추가
+# Add marketplace
 /plugin marketplace add lazylagom/lazy-marketplace
 
-# 플러그인 설치
+# Install plugin
 /plugin install imlazy
 ```
 
-### 설치 확인
+### Verify Installation
 
-Claude Code에서:
+In Claude Code:
 ```
-# 설치된 플러그인 목록
+# List installed plugins
 /plugin list
 ```
 
 ## Commands
 
-### 자동 플로우
+### Automatic Flow
 | Command | Description |
 |---------|-------------|
-| `/imlazy:think <task>` | 적응형 인지 워크플로우 (권장) |
+| `/imlazy:think <task>` | Adaptive cognitive workflow (recommended) |
 
-### 개별 모드
+### Individual Modes
 | Command | Description | Model |
 |---------|-------------|-------|
-| `/imlazy:orient <task>` | 문제 이해, 가설 형성 | Sonnet |
-| `/imlazy:explore <area>` | 점진적 코드 탐색 | Haiku |
-| `/imlazy:theorize <goal>` | 해결책 가설 수립 | Opus |
-| `/imlazy:execute <task>` | 단계별 구현 + 검증 | Sonnet |
-| `/imlazy:verify <what>` | 원래 의도와 비교 검증 | Sonnet |
+| `/imlazy:orient <task>` | Understand problem, form hypotheses | Sonnet |
+| `/imlazy:explore <area>` | Progressive code exploration | Haiku |
+| `/imlazy:theorize <goal>` | Establish solution hypothesis | Opus |
+| `/imlazy:execute <task>` | Step-by-step implementation + verification | Sonnet |
+| `/imlazy:verify <what>` | Validate against original intent | Sonnet |
 
-## 인지 모드 시스템
+## Cognitive Mode System
 
 ```
 ORIENT → EXPLORE → THEORIZE → EXECUTE → VERIFY
    ↑         ↑         ↑         ↑         ↓
    └─────────┴─────────┴─────────┴─────────┘
-           (언제든 루프백 가능)
+           (Loop back anytime)
 ```
 
-### ORIENT (이해)
-- "사용자가 진짜 원하는 게 뭐지?"
-- 가설 형성, 성공의 모습 정의
-- Critical Unknown 식별
+### ORIENT (Understand)
+- "What does the user really want?"
+- Form hypotheses, define what success looks like
+- Identify Critical Unknowns
 
-### EXPLORE (탐색)
-- 필요한 만큼만 점진적 탐색
-- 패턴 발견 시 멈춤
-- 전체 분석 X, 충분한 이해 O
+### EXPLORE (Search)
+- Progressive exploration, only as much as needed
+- Stop when patterns are found
+- Not complete analysis, but sufficient understanding
 
-### THEORIZE (가설)
-- "X를 하면 Y가 될 것이다"
-- Minimal Viable Test 정의
-- 실패 시 대안 준비
+### THEORIZE (Hypothesize)
+- "If I do X, Y will happen"
+- Define Minimal Viable Test
+- Prepare alternatives for failure
 
-### EXECUTE (실행)
-- 한 번에 하나, 바로 확인
-- 에러 = 정보 (무시 X)
-- 막히면 이전 모드로 복귀
+### EXECUTE (Implement)
+- One at a time, verify immediately
+- Error = Information (don't ignore)
+- Return to previous mode when blocked
 
-### VERIFY (검증)
-- ORIENT의 "성공 모습"과 비교
-- 적대적 테스트 (깨뜨리기 시도)
-- Gap 발견 시 EXECUTE로 복귀
+### VERIFY (Validate)
+- Compare against ORIENT's "success definition"
+- Adversarial testing (try to break it)
+- Return to EXECUTE when gaps are found
 
-## 인사이트 체인
+## Insight Chain
 
-모드 간 **간결한 인사이트**로 맥락 전달:
+Pass context between modes with **concise insights**:
 
 ```markdown
-## Insight: 세션 기반 인증 적합
+## Insight: Session-based auth is suitable
 Type: hypothesis
 Confidence: medium
-Content: JWT보다 세션이 단순. express-session 설치됨.
-Source: EXPLORE에서 package.json 확인
+Content: Sessions are simpler than JWT. express-session is installed.
+Source: Checked package.json in EXPLORE
 ```
 
-- 인사이트당 최대 3문장
-- 상세 문서 X, 핵심만 O
+- Maximum 3 sentences per insight
+- Not detailed docs, just the essentials
 
-## 사용 예시
+## Usage Examples
 
 ```
-# 자동 플로우 (권장)
-/imlazy:think 사용자 인증 추가
+# Automatic flow (recommended)
+/imlazy:think add user authentication
 
-# 탐색만 필요할 때
+# When only exploration is needed
 /imlazy:explore src/auth
 
-# 가설 수립만
-/imlazy:theorize 캐싱 전략
+# Just hypothesis building
+/imlazy:theorize caching strategy
 
-# 구현 + 검증
-/imlazy:execute passport.js 미들웨어 추가
-/imlazy:verify 인증 기능
+# Implementation + verification
+/imlazy:execute add passport.js middleware
+/imlazy:verify authentication feature
 ```
 
-## 플로우 예시
+## Flow Examples
 
-### 단순 버그 수정
+### Simple Bug Fix
 ```
 ORIENT → EXPLORE → EXECUTE → VERIFY
-(THEORIZE 스킵 - 원인 명확)
+(Skip THEORIZE - cause is obvious)
 ```
 
-### 복잡 기능 추가
+### Complex Feature Addition
 ```
-ORIENT → EXPLORE → THEORIZE → EXECUTE(실패)
-  → EXPLORE(추가 탐색) → THEORIZE(수정)
+ORIENT → EXPLORE → THEORIZE → EXECUTE(fail)
+  → EXPLORE(additional search) → THEORIZE(revise)
   → EXECUTE → VERIFY
 ```
 
@@ -137,46 +137,46 @@ imlazy/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   ├── think.md          # 자동 적응형 플로우
-│   ├── orient.md          # 개별 모드
+│   ├── think.md          # Automatic adaptive flow
+│   ├── orient.md          # Individual modes
 │   ├── explore.md
 │   ├── theorize.md
 │   ├── execute.md
 │   └── verify.md
 ├── agents/
-│   ├── orient.md          # 이해 에이전트
-│   ├── explore.md         # 탐색 에이전트
-│   ├── theorize.md        # 가설 에이전트
-│   ├── execute.md         # 실행 에이전트
-│   └── verify.md          # 검증 에이전트
+│   ├── orient.md          # Understanding agent
+│   ├── explore.md         # Exploration agent
+│   ├── theorize.md        # Hypothesis agent
+│   ├── execute.md         # Execution agent
+│   └── verify.md          # Verification agent
 ├── skills/
-│   └── insight-chain/     # 인사이트 체인 시스템
+│   └── insight-chain/     # Insight chain system
 └── hooks/
-    ├── hooks.json         # Hook 설정
+    ├── hooks.json         # Hook configuration
     └── scripts/
-        ├── auto-formatter.sh   # 파일 저장 시 자동 포맷
-        ├── bash-validator.py   # 위험 명령어 차단
-        └── file-protector.py   # 민감 파일 보호
+        ├── auto-formatter.sh   # Auto-format on file save
+        ├── bash-validator.py   # Block dangerous commands
+        └── file-protector.py   # Protect sensitive files
 ```
 
 ## Hooks
 
-자동화된 안전장치:
+Automated safety mechanisms:
 
-| Hook | 동작 | 설명 |
-|------|------|------|
-| **auto-formatter** | PostToolUse | prettier/black 자동 실행 |
-| **bash-validator** | PreToolUse | `rm -rf /`, `git push -f` 차단 |
-| **file-protector** | PreToolUse | `.env`, `*.lock` 편집 차단 |
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| **auto-formatter** | PostToolUse | Auto-run prettier/black |
+| **bash-validator** | PreToolUse | Block `rm -rf /`, `git push -f` |
+| **file-protector** | PreToolUse | Block editing `.env`, `*.lock` |
 
-## vs 기존 SDLC 워크플로우
+## vs Traditional SDLC Workflow
 
-| 기존 | 새로운 |
-|------|--------|
-| 고정 5단계 순차 실행 | 적응형 루프백/스킵 |
-| 템플릿 채우기 | 실제 사고 과정 |
-| 상세 문서 전달 | 간결한 인사이트 |
-| FR-1, NFR-1 번호 매기기 | 가설과 증거 |
+| Traditional | New |
+|-------------|-----|
+| Fixed 5-step sequential execution | Adaptive loopback/skip |
+| Template filling | Actual thought process |
+| Detailed document handoff | Concise insights |
+| FR-1, NFR-1 numbering | Hypotheses and evidence |
 
 ## License
 
