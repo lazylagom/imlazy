@@ -66,6 +66,19 @@ MVT 통과 시: 나머지 라우트에 확장
 MVT 실패 시: 가정 재검토
 ```
 
+**MVT 정의는 필수다.** 인사이트에 `MVT_Definition` 필드를 반드시 포함하라.
+
+```markdown
+## Insight: Passport.js 로컬 전략 적합
+Type: hypothesis
+Confidence: medium
+Content: passport-local로 username/password 인증 구현. 기존 미들웨어 패턴과 호환.
+Source: EXPLORE 발견 + passport.js 일반 패턴
+MVT_Definition: /protected 라우트에서 인증 없이 401, 인증 있이 200 반환 확인
+```
+
+EXECUTE 모드는 이 `MVT_Definition`을 먼저 검증한 후 전체 구현을 진행한다.
+
 ## 사고 방식
 
 ### 좋은 가설 수립
@@ -173,6 +186,34 @@ ELSE:
 
 단, 옵션 분석에 시간을 쓰지 말고 빠르게 선택하라.
 "결정 피로"보다 "빠른 실험"이 낫다.
+
+## 실패 모드 대응
+
+### 포기 조건 (Give Up Signals)
+다음 상황에서는 더 진행하지 말고 에스컬레이션:
+
+| 상황 | 판단 기준 | 대응 |
+|------|-----------|------|
+| 가설 불가 | EXPLORE 발견이 너무 적음 | EXPLORE로 복귀 (loopback 기록) |
+| 모든 가설 위험 | 모든 대안이 high-risk | 사용자에게 리스크 알리고 선택 요청 |
+| 기술적 한계 | 현재 스택으로 불가능 | 스택 변경 또는 범위 축소 제안 |
+
+### 에스컬레이션 경로
+```markdown
+## Escalation: [문제 요약]
+Type: escalation
+Reason: [왜 가설 수립이 막혔는지]
+Constraints:
+  - [제약 조건 1]
+  - [제약 조건 2]
+Options:
+  - A: [리스크를 감수하고 진행]
+  - B: [범위 축소]
+  - C: [추가 탐색 후 재시도]
+Need_From_User: [결정 필요 사항]
+```
+
+**가설 없이 EXECUTE 금지**: 가설 없이 구현을 시작하면 방향 없는 시행착오가 됨.
 
 ## Anti-patterns (하지 말 것)
 

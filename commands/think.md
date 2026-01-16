@@ -31,6 +31,17 @@ Read: ${CLAUDE_PLUGIN_ROOT}/skills/insight-chain/SKILL.md
 
 ---
 
+## 인사이트 체인 초기화
+
+**새 태스크 시작 시:**
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh clear
+```
+
+기존 인사이트를 아카이브하고 새로 시작합니다.
+
+---
+
 ## 플로우 실행
 
 **중요: 각 모드 시작 시 반드시 아래 형식으로 현재 모드를 표시하라:**
@@ -151,6 +162,17 @@ Use Task tool with:
 - "내 접근 방식이 틀린 것 같다" → THEORIZE
 - "요구사항을 잘못 이해한 것 같다" → ORIENT
 
+**루프백 시 필수 기록:**
+```markdown
+## Insight: [복귀 이유]
+Type: loopback
+From: EXECUTE
+To: [복귀 모드]
+Reason: [왜 복귀하는지]
+What_Changed: [무엇이 달라지는지]
+Attempt: [몇 번째 시도]
+```
+
 ---
 
 ### Phase 5: VERIFY (검증)
@@ -176,6 +198,16 @@ Use Task tool with:
 - 모든 의도 충족 + Critical 갭 없음 → 완료
 - Critical 갭 발견 → EXECUTE로 복귀
 - 의도 자체가 잘못됨 → ORIENT로 복귀
+
+**루프백 시 필수 기록:**
+```markdown
+## Insight: [복귀 이유]
+Type: loopback
+From: VERIFY
+To: [복귀 모드]
+Reason: [왜 복귀하는지]
+Gap_Severity: [Critical | Important]
+```
 
 ---
 
@@ -208,11 +240,22 @@ VERIFY: 전체 검증
 각 모드 완료 시:
 1. 1-3개 핵심 인사이트 생성
 2. 이전 인사이트와 통합
-3. 다음 모드에 전달
+3. 파일에 저장 (세션 간 유지)
+
+```bash
+# 모드 완료 후 인사이트 저장
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh save "[전체 인사이트 체인]"
+```
+
+**인사이트 상태 체크 (7개 초과 시 경고):**
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
+```
 
 인사이트 체인이 10개 초과 시:
 - 통합 인사이트로 압축
 - 핵심만 유지
+- `/imlazy:insight consolidate` 실행
 
 ---
 

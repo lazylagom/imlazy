@@ -47,6 +47,8 @@ Source: [어디서 이 인사이트가 나왔나]
 | hypothesis | 해결책 가설 | "세션 기반 인증이 JWT보다 적합" |
 | evidence | 검증된 사실 | "보호 라우트 테스트 통과" |
 | gap | 발견된 격차 | "토큰 만료 처리 미구현" |
+| loopback | 모드 복귀 결정 | "API 구조 재탐색 필요 → EXPLORE" |
+| escalation | 진행 불가, 사용자 결정 필요 | "환경 설정 문제로 실행 불가" |
 
 ### Confidence 기준
 
@@ -115,12 +117,46 @@ Content: 세션 만료 후 재로그인 유도 로직 없음. UX 개선 필요�
 Source: 세션 만료 시나리오 테스트
 ```
 
+## Loopback 기록
+
+모드 간 복귀(loopback) 발생 시 반드시 기록:
+
+```markdown
+## Insight: [복귀 이유 요약]
+Type: loopback
+From: [현재 모드]
+To: [복귀할 모드]
+Reason: [왜 복귀하는지 1-2문장]
+What_Changed: [기존 가설/이해에서 무엇이 달라지는지]
+Attempt: [몇 번째 시도인지 - 예: 1st, 2nd]
+```
+
+### Loopback 예시
+
+```markdown
+## Insight: API 응답 구조 불일치로 재탐색 필요
+Type: loopback
+From: EXECUTE
+To: EXPLORE
+Reason: API가 배열이 아닌 객체를 반환. 문서와 실제 동작 불일치.
+What_Changed: 기존 "배열 순회" 가설 폐기, 객체 키 접근 방식 탐색
+Attempt: 1st
+```
+
+**Loopback 인사이트의 가치:**
+- 같은 실수 반복 방지
+- 어떤 가설이 왜 폐기됐는지 추적
+- 다음 유사 문제에서 참고
+
+---
+
 ## 체인 규칙
 
 ### 생성 규칙
 1. **모드당 1-3개 인사이트** - 더 많으면 핵심이 아님
 2. **인사이트당 1-3문장** - 더 길면 문서화하고 있는 것
 3. **Source 필수** - 근거 없는 인사이트는 추측
+4. **Loopback 시 필수 기록** - 복귀 이유 없이 모드 전환 금지
 
 ### 소비 규칙
 1. **전체 체인 읽기** - 이전 모든 인사이트 확인
@@ -152,3 +188,59 @@ Covers: [통합된 인사이트 제목들]
 - 10줄 넘는 Content → 문서로 분리
 - Source 없는 인사이트 → 추측일 가능성
 - 모든 것을 인사이트로 → 핵심 희석
+
+---
+
+## 세션 간 전달 (Persistence)
+
+인사이트 체인은 세션 간에도 유지됩니다. `~/.imlazy/insight-chain.md` 파일에 자동 저장됩니다.
+
+### 스크립트 사용
+
+```bash
+# 현재 인사이트 체인 불러오기
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh load
+
+# 인사이트 체인 저장하기
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh save "내용"
+
+# 인사이트 추가하기
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh append "## Insight: 새 인사이트"
+
+# 체인 상태 확인 (개수, 통합 필요 여부)
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
+
+# 체인 초기화 (히스토리에 백업 후)
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh clear
+```
+
+### 자동 관리 규칙
+
+1. **모드 시작 시**: 기존 체인 자동 로드
+2. **모드 종료 시**: 새 인사이트 자동 저장
+3. **7개 초과 시**: "approaching-limit" 경고
+4. **10개 초과 시**: "consolidation-needed" 경고 → 통합 필수
+
+### 개별 명령어 사용 시
+
+`/imlazy:orient` → `/imlazy:explore` 처럼 개별 명령어를 순차 실행할 때:
+
+```
+/imlazy:orient "인증 추가"
+→ 인사이트 생성됨 (자동 저장)
+
+/imlazy:explore "인증 코드 탐색"
+→ 이전 인사이트 자동 로드 + 새 인사이트 추가
+```
+
+수동으로 체인을 관리하려면:
+
+```
+/imlazy:insight health   # 상태 확인
+/imlazy:insight clear    # 새 태스크 시작 전 초기화
+```
+
+### 히스토리
+
+모든 인사이트 체인은 `~/.imlazy/insight-history/`에 타임스탬프와 함께 백업됩니다.
+과거 의사결정을 추적하거나 참조할 때 유용합니다.

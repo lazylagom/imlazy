@@ -19,6 +19,17 @@ Read: ${CLAUDE_PLUGIN_ROOT}/skills/insight-chain/SKILL.md
 
 ---
 
+## 이전 인사이트 로드
+
+기존 인사이트 체인 로드 (ORIENT + EXPLORE + THEORIZE 결과 포함):
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh load
+```
+
+**THEORIZE 인사이트에서 MVT_Definition을 확인하라.** 이것을 먼저 검증해야 한다.
+
+---
+
 ## 실행
 
 Use Task tool with:
@@ -58,6 +69,27 @@ The Trail 형식으로 출력:
 
 ---
 
+## MVT 검증 (필수)
+
+**전체 구현 전에 MVT(Minimal Viable Test)를 먼저 검증하라.**
+
+THEORIZE 인사이트의 `MVT_Definition`을 찾아서:
+1. 해당 항목만 최소한으로 구현
+2. 즉시 테스트
+3. 결과 기록
+
+```markdown
+## MVT Checkpoint
+Definition: [THEORIZE에서 정의한 MVT]
+Status: [✓ Passed | ✗ Failed]
+Result: [무엇이 확인되었나]
+Next: [전체 구현 진행 | 가설 재검토]
+```
+
+**MVT 실패 시**: 전체 구현 진행하지 말고 THEORIZE로 복귀하여 가설 재검토.
+
+---
+
 ## 인사이트 생성
 
 구현 완료 시 evidence 타입 인사이트:
@@ -68,6 +100,21 @@ Type: evidence
 Confidence: high
 Content: [1-3문장 - 무엇이 동작하는지]
 Source: [테스트 결과]
+MVT_Status: [✓ Passed | ✗ Failed]
+```
+
+---
+
+## 인사이트 저장
+
+생성한 인사이트를 체인에 추가:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh append "[새 인사이트]"
+```
+
+상태 확인:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
 ```
 
 ---
@@ -76,3 +123,4 @@ Source: [테스트 결과]
 
 - 탐색 필요 → `/explore` 또는 EXPLORE 모드로 복귀
 - 가설 재검토 필요 → `/theorize` 또는 THEORIZE 모드로 복귀
+- MVT 실패 → THEORIZE 모드로 복귀

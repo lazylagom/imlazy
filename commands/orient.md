@@ -19,6 +19,15 @@ Read: ${CLAUDE_PLUGIN_ROOT}/skills/insight-chain/SKILL.md
 
 ---
 
+## 이전 인사이트 로드
+
+기존 인사이트 체인이 있으면 로드:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh load
+```
+
+---
+
 ## 실행
 
 Use Task tool with:
@@ -62,4 +71,18 @@ Type: understanding
 Confidence: [high/medium/low]
 Content: [1-3문장]
 Source: [근거]
+```
+
+---
+
+## 인사이트 저장
+
+생성한 인사이트를 체인에 추가:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh append "[새 인사이트]"
+```
+
+상태 확인:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
 ```

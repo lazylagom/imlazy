@@ -19,6 +19,17 @@ Read: ${CLAUDE_PLUGIN_ROOT}/skills/insight-chain/SKILL.md
 
 ---
 
+## 이전 인사이트 로드
+
+전체 인사이트 체인 로드 (ORIENT → EXECUTE 결과 포함):
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh load
+```
+
+**ORIENT의 "성공의 모습"과 EXECUTE의 MVT_Status를 반드시 확인하라.**
+
+---
+
 ## 실행
 
 Use Task tool with:
@@ -82,6 +93,21 @@ Type: gap
 Confidence: high
 Content: [무엇이 부족한지]
 Source: [어떻게 발견했는지]
+Severity: [Critical | Important | Minor]
+```
+
+---
+
+## 인사이트 저장
+
+생성한 인사이트를 체인에 추가:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh append "[새 인사이트]"
+```
+
+상태 확인:
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
 ```
 
 ---
@@ -90,4 +116,9 @@ Source: [어떻게 발견했는지]
 
 - Critical 갭 → `/execute` 로 수정
 - 의도 불일치 → `/orient` 로 재이해
-- 모두 통과 → 완료
+- 모두 통과 → 완료 (체인 아카이브)
+
+**완료 시 체인 아카이브:**
+```bash
+${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh clear
+```

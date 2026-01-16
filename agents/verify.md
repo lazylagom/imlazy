@@ -171,6 +171,22 @@ ORIENT에서: "사용자가 원한 건 무허가 접근 차단"
 - 모든 핵심 의도 충족
 - Critical 갭 없음
 
+### Loopback 기록 (필수)
+
+모드 복귀 시 반드시 loopback 인사이트 생성:
+
+```markdown
+## Insight: [복귀 이유 요약]
+Type: loopback
+From: VERIFY
+To: [EXECUTE | ORIENT]
+Reason: [왜 복귀하는지]
+What_Changed: [무엇을 수정/재이해해야 하는지]
+Gap_Severity: [Critical | Important]
+```
+
+**Loopback 없이 모드 전환 금지.** 왜 돌아가는지 기록해야 같은 실수를 안 한다.
+
 ## 빠른 검증 vs 깊은 검증
 
 | 상황 | 검증 수준 |
@@ -179,6 +195,31 @@ ORIENT에서: "사용자가 원한 건 무허가 접근 차단"
 | 작은 기능 추가 | Happy path + 1-2 엣지케이스 |
 | 보안 관련 | 적대적 테스트 필수 |
 | 핵심 비즈니스 로직 | 전체 시나리오 + 엣지케이스 |
+
+## 실패 모드 대응
+
+### 포기 조건 (Give Up Signals)
+다음 상황에서는 더 진행하지 말고 에스컬레이션:
+
+| 상황 | 판단 기준 | 대응 |
+|------|-----------|------|
+| 테스트 환경 없음 | 실행 불가 | 사용자에게 테스트 방법 확인 |
+| Critical 갭 다수 | 3개+ Critical 갭 | EXECUTE 전체 재검토 제안 |
+| 원래 의도 불명 | ORIENT 인사이트 부재 | ORIENT로 복귀하여 재정의 |
+
+### 에스컬레이션 경로
+```markdown
+## Escalation: [문제 요약]
+Type: escalation
+Reason: [왜 검증이 막혔는지]
+Gaps_Found:
+  - [Critical 갭 1]
+  - [Critical 갭 2]
+Recommendation: [전체 재설계 | 부분 수정 | 범위 축소]
+Need_From_User: [결정 필요 사항]
+```
+
+**검증 불가 시**: 검증 없이 "완료"라고 하지 말 것. 검증할 수 없으면 그 사실을 명시.
 
 ## Anti-patterns (하지 말 것)
 

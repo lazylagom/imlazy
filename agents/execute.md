@@ -42,7 +42,30 @@ Step → Verify → Step → Verify → Step → Verify
 
 실패하면? 바로 수정하거나, 가설을 재검토하러 돌아감.
 
+## MVT 먼저 (필수)
+
+**전체 구현 전에 THEORIZE의 MVT를 먼저 검증하라.**
+
+THEORIZE 인사이트에서 `MVT_Definition`을 찾아서:
+1. 해당 항목만 최소한으로 구현
+2. 즉시 테스트
+3. 결과 기록
+
+```markdown
+## MVT Checkpoint
+Definition: [THEORIZE에서 정의한 MVT]
+Status: [✓ Passed | ✗ Failed]
+Result: [무엇이 확인되었나]
+Next: [전체 구현 진행 | 가설 재검토 (THEORIZE 복귀)]
+```
+
+**MVT 실패 시**: 전체 구현 진행하지 말고 THEORIZE로 복귀하여 가설 재검토.
+
+---
+
 ## 실행 루프
+
+MVT 통과 후:
 
 ```
 while (목표 미달성):
@@ -87,6 +110,22 @@ TypeError: Cannot read property 'id' of undefined
 ```
 
 무작정 시도하지 말 것. 원인을 먼저 파악.
+
+### Loopback 기록 (필수)
+
+모드 복귀 시 반드시 loopback 인사이트 생성:
+
+```markdown
+## Insight: [복귀 이유 요약]
+Type: loopback
+From: EXECUTE
+To: [EXPLORE | THEORIZE | ORIENT]
+Reason: [왜 복귀하는지]
+What_Changed: [기존 가설에서 무엇이 달라지는지]
+Attempt: [몇 번째 시도인지]
+```
+
+**Loopback 없이 모드 전환 금지.** 기록이 없으면 같은 실수를 반복한다.
 
 ## 사고 방식
 
@@ -208,6 +247,47 @@ npm run dev 2>&1 | grep -i auth
 **THEORIZE로 복귀:**
 - "내 접근 방식 자체가 틀린 것 같다"
 - "다른 방법을 고려해야 한다"
+
+## 실패 모드 대응
+
+### 포기 조건 (Give Up Signals)
+다음 상황에서는 더 진행하지 말고 에스컬레이션:
+
+| 상황 | 판단 기준 | 대응 |
+|------|-----------|------|
+| 반복 실패 | 같은 에러 3회 반복 | 원인 분석 후 EXPLORE/THEORIZE 복귀 |
+| 환경 문제 | 설치/권한 이슈 | 사용자에게 환경 확인 요청 |
+| 의존성 충돌 | 패키지 버전 호환 불가 | 대안 패키지 또는 버전 조정 제안 |
+| 토큰 한도 | 컨텍스트 초과 | 부분 구현 저장 후 사용자에게 알림 |
+
+### 에스컬레이션 경로
+```markdown
+## Escalation: [문제 요약]
+Type: escalation
+Reason: [왜 구현이 막혔는지]
+Error: [구체적 에러 메시지]
+Tried:
+  - [시도 1]: [결과]
+  - [시도 2]: [결과]
+Hypothesis: [에러 원인 추측]
+Need_From_User: [필요한 정보/조치]
+```
+
+### 부분 완료 저장
+완료하지 못하고 중단해야 할 때:
+```markdown
+## Partial Progress
+Completed:
+  - [완료된 부분 1]
+  - [완료된 부분 2]
+Remaining:
+  - [남은 부분 1]
+  - [남은 부분 2]
+Blocker: [막힌 이유]
+Resume_Hint: [다음에 이어서 할 때 참고]
+```
+
+**무한 루프 방지**: 같은 시도를 3번 이상 반복하지 말 것. 다른 접근이 필요하다는 신호.
 
 ## Anti-patterns (하지 말 것)
 
