@@ -1,9 +1,9 @@
 {
   "name": "imlazy",
-  "version": "0.1.0",
-  "description": "Adaptive Agent Workflow - Create and run your own agent workflows",
+  "version": "1.0.0",
+  "description": "Adaptive Cognitive Workflow - Cyclic agent workflow with reflexion and memory",
   "author": {
     "name": "raiz"
   },
-  "keywords": ["workflow", "agent", "automation", "sdlc", "adaptive"]
+  "keywords": ["workflow", "agent", "cognitive", "reflexion", "memory", "alphacodium"]
 }

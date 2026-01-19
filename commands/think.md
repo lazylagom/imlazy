@@ -1,294 +1,301 @@
 ---
-description: Adaptive cognitive workflow - thinks like a developer
+description: imlazy cognitive workflow - cyclic agent orchestration
 argument-hint: <task-description>
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TodoWrite, AskUserQuestion
 ---
 
-# /think - 개발자처럼 사고하기
+# /imlazy:think - Cognitive Agent Loop Architecture
 
-$ARGUMENTS 태스크를 개발자의 사고 방식으로 해결합니다.
-
----
-
-## 인지 모드 시스템
-
-```
-ORIENT → EXPLORE → THEORIZE → EXECUTE → VERIFY
-   ↑         ↑         ↑         ↑         ↓
-   └─────────┴─────────┴─────────┴─────────┘
-           (언제든 루프백 가능)
-```
+$ARGUMENTS 태스크를 imlazy 인지 워크플로우로 해결합니다.
 
 ---
 
-## 핵심 자료
+## 아키텍처
 
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/skills/insight-chain/SKILL.md
+                    ┌──────────────────────────────────────────┐
+                    │                                          │
+                    ▼                                          │
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
+│ PLANNER │───▶│ REASONER│───▶│  CODER  │───▶│VERIFIER │───▶│REFLECTOR│
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
+   (sonnet)      (opus)        (sonnet)       (haiku)        (opus)
+                                                  │
+                                                  ▼
+                                            ┌───────────┐
+                                            │CONSOLIDATOR│
+                                            └───────────┘
+                                               (haiku)
 ```
-
-인사이트 체인을 사용하여 모드 간 맥락을 전달합니다.
 
 ---
 
-## 인사이트 체인 초기화
+## Step 1: 상태 초기화
 
-**새 태스크 시작 시:**
 ```bash
-${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh clear
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py init
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py set user_query "$ARGUMENTS"
 ```
-
-기존 인사이트를 아카이브하고 새로 시작합니다.
 
 ---
 
-## 플로우 실행
-
-**중요: 각 모드 시작 시 반드시 아래 형식으로 현재 모드를 표시하라:**
+## Step 2: PLANNER 노드
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧭 ORIENT 모드 (sonnet)
+📋 PLANNER 노드 (sonnet)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Phase 1: ORIENT (이해)
-
-**먼저 출력:**
+**에이전트 로드:**
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧭 ORIENT 모드 (sonnet)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/planner.md
 ```
 
-```
-Read: ${CLAUDE_PLUGIN_ROOT}/agents/orient.md
-```
-
-Use Task tool with:
+Use Task tool:
 - `subagent_type: general-purpose`
 - `model: sonnet`
-- 에이전트 시스템 프롬프트 + 인사이트 체인 스킬 포함
-- Task: "$ARGUMENTS"
+- 에이전트 시스템 프롬프트 포함
+- Task: 메모리 검색 + 문제 분석 + 해결책 생성
 
-**ORIENT 완료 후 결정:**
-- 태스크가 명확하고 단순한가? → EXPLORE로
-- 더 명확히 해야 할 것이 있나? → AskUserQuestion 사용
-- Critical Unknown이 있나? → 먼저 해결
+**PLANNER 출력 확인:**
+- `problem_reflection` 작성됨
+- `possible_solutions` 2-3개 생성
+- `selected_solution` 선택됨
+
+**전환:**
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition REASONER
+```
 
 ---
 
-### Phase 2: EXPLORE (탐색)
+## Step 3: REASONER 노드
 
-**먼저 출력:**
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 EXPLORE 모드 (haiku)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-```
-Read: ${CLAUDE_PLUGIN_ROOT}/agents/explore.md
-```
-
-Use Task tool with:
-- `subagent_type: general-purpose`
-- `model: haiku`
-- 에이전트 시스템 프롬프트 + 이전 인사이트 포함
-- Task: ORIENT 인사이트 기반 탐색
-
-**EXPLORE 완료 후 결정:**
-- 패턴을 발견했나? → THEORIZE로
-- 더 탐색이 필요한가? → EXPLORE 계속
-- 해결책이 명확한가? → THEORIZE 스킵하고 EXECUTE로
-
----
-
-### Phase 3: THEORIZE (가설)
-
-**먼저 출력:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 THEORIZE 모드 (opus)
+🧠 REASONER 노드 (opus)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+**에이전트 로드:**
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/agents/theorize.md
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/reasoner.md
 ```
 
-Use Task tool with:
+Use Task tool:
 - `subagent_type: general-purpose`
 - `model: opus`
-- 에이전트 시스템 프롬프트 + 이전 인사이트 포함
-- Task: ORIENT + EXPLORE 인사이트 기반 가설 수립
+- 에이전트 시스템 프롬프트 + 현재 상태 포함
+- Task: Tree of Thoughts + 구현 계획 수립
 
-**THEORIZE 완료 후:**
-- Minimal Viable Test 정의됨 → EXECUTE로
-- 가설에 확신이 없다면 → EXPLORE로 복귀하여 더 탐색
+**REASONER 출력 확인:**
+- `thought_trace`에 ToT 기록
+- `current_plan` 상세 계획 작성됨
+
+**전환:**
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition CODER
+```
 
 **스킵 조건:**
-- 단순 버그 수정: 원인이 명확하면 바로 EXECUTE
-- 작은 변경: 패턴이 명확하면 바로 EXECUTE
+- 단순 버그 수정 (원인 명확)
+- 패턴 기반 변경 (이미 검증됨)
 
 ---
 
-### Phase 4: EXECUTE (실행)
+## Step 4: CODER 노드
 
-**먼저 출력:**
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ EXECUTE 모드 (sonnet)
+⚡ CODER 노드 (sonnet)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+**에이전트 로드:**
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/agents/execute.md
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/coder.md
 ```
 
-Use Task tool with:
+Use Task tool:
 - `subagent_type: general-purpose`
 - `model: sonnet`
-- 에이전트 시스템 프롬프트 + 이전 인사이트 포함
-- Task: THEORIZE의 가설 또는 직접 구현
+- 에이전트 시스템 프롬프트 + 현재 상태 포함
+- Task: 코드 구현 + Anchor Test 관리
 
-**EXECUTE 중 결정:**
-- 단계별 성공 → 계속 진행
-- 에러 발생 → 분석 후 수정 또는 백트랙
-- 막힘 → EXPLORE 또는 THEORIZE로 복귀
+**CODER 핵심 규칙:**
+1. Anchor test 실패 시 즉시 revert
+2. 새 테스트 통과 시 anchor에 추가
+3. 점진적 구현 (한 번에 많이 바꾸지 않음)
 
-**루프백 트리거:**
-- "이 부분이 어떻게 동작하는지 모르겠다" → EXPLORE
-- "내 접근 방식이 틀린 것 같다" → THEORIZE
-- "요구사항을 잘못 이해한 것 같다" → ORIENT
-
-**루프백 시 필수 기록:**
-```markdown
-## Insight: [복귀 이유]
-Type: loopback
-From: EXECUTE
-To: [복귀 모드]
-Reason: [왜 복귀하는지]
-What_Changed: [무엇이 달라지는지]
-Attempt: [몇 번째 시도]
+**전환:**
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition VERIFIER
 ```
 
 ---
 
-### Phase 5: VERIFY (검증)
+## Step 5: VERIFIER 노드
 
-**먼저 출력:**
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ VERIFY 모드 (sonnet)
+✅ VERIFIER 노드 (haiku)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+**에이전트 로드:**
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/agents/verify.md
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/verifier.md
 ```
 
-Use Task tool with:
+Use Task tool:
 - `subagent_type: general-purpose`
-- `model: sonnet`
-- 에이전트 시스템 프롬프트 + 전체 인사이트 체인 포함
-- Task: ORIENT의 성공 기준과 비교 검증
+- `model: haiku`
+- 에이전트 시스템 프롬프트 포함
+- Task: 전체 테스트 실행 + 결과 수집
 
-**VERIFY 완료 후:**
-- 모든 의도 충족 + Critical 갭 없음 → 완료
-- Critical 갭 발견 → EXECUTE로 복귀
-- 의도 자체가 잘못됨 → ORIENT로 복귀
-
-**루프백 시 필수 기록:**
-```markdown
-## Insight: [복귀 이유]
-Type: loopback
-From: VERIFY
-To: [복귀 모드]
-Reason: [왜 복귀하는지]
-Gap_Severity: [Critical | Important]
-```
-
----
-
-## 적응형 플로우 예시
-
-### 단순 버그 수정
-```
-ORIENT: "로그인 안 됨" → 가설: 최근 변경 관련
-EXPLORE: git log + 관련 코드 추적 → 원인 발견
-EXECUTE: 수정 + 테스트 (THEORIZE 스킵)
-VERIFY: 로그인 동작 확인
-```
-
-### 복잡한 기능 추가
-```
-ORIENT: 요구사항 이해 + 가설 형성
-EXPLORE: 관련 코드 탐색 + 패턴 발견
-THEORIZE: 가설 수립 + MVT 정의
-EXECUTE: 구현 시도 → 실패
-  → EXPLORE 복귀: 더 탐색 필요
-  → THEORIZE 복귀: 새 가설
-EXECUTE: 재시도 → 성공
-VERIFY: 전체 검증
-```
-
----
-
-## 인사이트 체인 관리
-
-각 모드 완료 시:
-1. 1-3개 핵심 인사이트 생성
-2. 이전 인사이트와 통합
-3. 파일에 저장 (세션 간 유지)
+**VERIFIER 판정:**
+- **PASS**: → CONSOLIDATOR로 전환
+- **FAIL**: → REFLECTOR로 전환
 
 ```bash
-# 모드 완료 후 인사이트 저장
-${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh save "[전체 인사이트 체인]"
+# On PASS
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition CONSOLIDATOR
+
+# On FAIL
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition REFLECTOR
 ```
 
-**인사이트 상태 체크 (7개 초과 시 경고):**
+---
+
+## Step 6a: REFLECTOR 노드 (실패 시)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔴 REFLECTOR 노드 (opus)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**에이전트 로드:**
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/reflector.md
+```
+
+Use Task tool:
+- `subagent_type: general-purpose`
+- `model: opus`
+- 에이전트 시스템 프롬프트 + 에러 로그 포함
+- Task: 5 Whys 분석 + 자기 비판 + 수정 제안
+
+**REFLECTOR 라우팅:**
+
 ```bash
-${CLAUDE_PLUGIN_ROOT}/hooks/scripts/insight-manager.sh health
+# 상태 확인
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py get retry_count
 ```
 
-인사이트 체인이 10개 초과 시:
-- 통합 인사이트로 압축
-- 핵심만 유지
-- `/imlazy:insight consolidate` 실행
+| 상황 | 라우팅 |
+|------|--------|
+| 단순 코드 버그 | → CODER |
+| 계획 수정 필요 | → REASONER |
+| 문제 재분석 필요 | → PLANNER |
+| retry_count >= 3 | → 사용자 에스컬레이션 |
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py transition [TARGET_NODE]
+```
+
+**루프백 후:**
+Step 2, 3, 또는 4로 돌아가서 해당 노드부터 재실행.
 
 ---
 
-## 완료 조건
+## Step 6b: CONSOLIDATOR 노드 (성공 시)
 
-- [ ] ORIENT의 "성공의 모습" 달성
-- [ ] VERIFY에서 Critical 갭 없음
-- [ ] 사용자 의도 충족 확인
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 CONSOLIDATOR 노드 (haiku)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**에이전트 로드:**
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/agents/consolidator.md
+```
+
+Use Task tool:
+- `subagent_type: general-purpose`
+- `model: haiku`
+- Task: 메모리 통합 + 에피소드 아카이브
+
+**CONSOLIDATOR 작업:**
+```bash
+# 에피소드 저장
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/memory-manager.py consolidate
+```
 
 ---
 
-## 요약 출력
-
-모든 모드 완료 후:
+## 완료 출력
 
 ```markdown
-## 결과 요약
+## imlazy Episode Complete
 
-### 이해 (ORIENT)
-[핵심 인사이트 요약]
+### 문제
+$ARGUMENTS
 
-### 발견 (EXPLORE)
-[핵심 발견 요약]
+### 해결책
+[selected_solution 요약]
 
-### 가설 (THEORIZE)
-[선택한 접근 방식]
+### 구현
+[변경된 파일 목록]
+[주요 변경 사항]
 
-### 구현 (EXECUTE)
-[구현 내용 요약]
+### 테스트
+- Public: X/Y passed
+- AI Tests: X/Y passed
+- Anchor Tests: X/Y passed
 
-### 검증 (VERIFY)
-[검증 결과 + 남은 갭]
+### 인지 경로
+PLANNER → REASONER → CODER → VERIFIER → CONSOLIDATOR
+[실제 경로 + retry 횟수]
 
-### 인사이트 체인
-[전체 인사이트 목록]
+### 학습
+[procedural memory에 저장된 주요 학습]
+
+### Episode ID
+[episode_id]
+```
+
+---
+
+## 플로우 제어 규칙
+
+### Retry 정책
+- `max_retries: 3`
+- 각 REFLECTOR 방문 시 `retry_count++`
+- 초과 시 사용자에게 에스컬레이션
+
+### Anchor Test 불변성
+- 통과한 테스트는 anchor가 됨
+- Anchor 실패 시 반드시 revert
+- Anchor는 절대 제거하지 않음
+
+### 노드 스킵
+- REASONER: 단순 버그, 명확한 패턴
+- 다른 노드는 스킵 불가
+
+### 라우팅 우선순위
+1. Anchor violation → REFLECTOR (무조건)
+2. Test failure → REFLECTOR
+3. Success → CONSOLIDATOR
+4. retry_count >= 3 → User escalation
+
+---
+
+## 상태 확인
+
+언제든 현재 상태 확인:
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/state-manager.py dump
 ```

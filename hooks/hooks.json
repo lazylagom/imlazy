@@ -1,5 +1,5 @@
 {
-  "description": "imlazy workflow hooks",
+  "description": "imlazy cognitive workflow hooks",
   "hooks": {
     "SessionStart": [
       {
@@ -43,6 +43,16 @@
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/auto-formatter.sh",
             "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/reflection-trigger.py",
+            "timeout": 5
           }
         ]
       }

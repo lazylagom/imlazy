@@ -4,23 +4,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-imlazy is a Claude Code plugin implementing an "Adaptive Cognitive Workflow System" - a developer-centric approach that mirrors how developers actually think (hypothesis-verification loops) rather than traditional SDLC waterfall methods.
+imlazy (Cognitive Agent Loop Architecture) is a Claude Code plugin implementing a cyclic cognitive agent workflow inspired by the imlazy paper. It combines AlphaCodium-style problem preprocessing, Tree of Thoughts reasoning, test anchoring, and Reflexion-based self-correction.
 
-**Core philosophy:** "Stay Lazy, Think Crazy" - Guess → Test → Fix, with adaptive phase skipping/looping based on context.
+**Core philosophy:** Give agents time to think and mirrors to reflect - deep thought loops over complex multi-agent systems.
 
 ## Plugin Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin manifest
-commands/                     # Slash commands (think.md is main entry)
-agents/                       # Agent system prompts with YAML frontmatter
-skills/insight-chain/         # Context-passing system between modes
-hooks/                        # Automation hooks (safety + formatting)
+imlazy/
+├── .claude-plugin/plugin.json    # Plugin manifest
+├── CLAUDE.md                     # This file
+│
+├── agents/                       # 6 cognitive nodes
+│   ├── planner.md               # Memory retrieval + AlphaCodium preprocessing
+│   ├── reasoner.md              # Tree of Thoughts deep reasoning
+│   ├── coder.md                 # Implementation + test anchoring
+│   ├── verifier.md              # Test execution
+│   ├── reflector.md             # Reflexion self-correction
+│   └── consolidator.md          # Memory consolidation
+│
+├── commands/                     # Slash commands
+│   ├── think.md                 # Main orchestration
+│   ├── memory.md                # Memory management
+│   ├── state.md                 # State inspection
+│   └── doctor.md                # Health check
+│
+├── skills/                       # Documentation
+│   ├── cognitive-state/SKILL.md # State schema docs
+│   ├── memory-system/SKILL.md   # 4-tier memory docs
+│   └── alphacodium-flow/SKILL.md # AlphaCodium docs
+│
+└── hooks/                        # Automation
+    ├── hooks.json               # Hook configuration
+    └── scripts/
+        ├── state-manager.py     # CognitiveState CRUD
+        ├── memory-manager.py    # 4-tier memory CRUD
+        ├── reflection-trigger.py # Auto-reflexion on failure
+        ├── bash-validator.py    # Command safety
+        ├── file-protector.py    # File protection
+        ├── init-session.sh      # Session init
+        └── auto-formatter.sh    # Code formatting
+```
+
+Runtime memory (`~/.imlazy/`):
+```
+~/.imlazy/
+├── working/state.json    # Working Memory (current episode)
+├── episodic/             # Past problem-solution pairs
+├── semantic/             # Domain knowledge, patterns
+└── procedural/           # Learned methods, corrections
 ```
 
 ## Development Commands
-
-This is a Claude Code plugin (Markdown + YAML), not a buildable project. No npm/build steps.
 
 **Testing the plugin locally:**
 ```bash
@@ -32,59 +67,99 @@ claude --plugin-dir /path/to/imlazy
 /imlazy:doctor
 ```
 
-## Architecture: Five-Mode Cognitive Workflow
-
+**Memory operations:**
 ```
-ORIENT → EXPLORE → THEORIZE → EXECUTE → VERIFY
-   ↑         ↑         ↑         ↑         ↓
-   └─────────┴─────────┴─────────┴─────────┘
-           (Adaptive loopback)
+/imlazy:memory search episodic "query"
+/imlazy:memory stats
 ```
 
-| Mode | Purpose | Model | Key Output |
-|------|---------|-------|------------|
-| ORIENT | Understand problem, form hypotheses | Sonnet | "The Compass" |
-| EXPLORE | Progressive codebase exploration | Haiku | "Map Fragment" |
-| THEORIZE | Solution hypothesis + MVT plan | Opus | "The Theory" |
-| EXECUTE | Incremental implementation | Sonnet | "Trail" |
-| VERIFY | Validate against original intent | Sonnet | "Verdict" |
-
-**Adaptive behaviors:**
-- Simple bugs: Skip THEORIZE (cause is obvious)
-- Blocked in EXECUTE: Loop back to EXPLORE or THEORIZE
-- Misunderstood requirements: Loop back to ORIENT
-
-## Insight Chain System
-
-Lightweight context passing between modes using structured insights:
-
-```markdown
-## Insight: [Title]
-Type: [understanding|discovery|hypothesis|evidence|gap|loopback|escalation]
-Confidence: [high|medium|low]
-Content: [1-3 sentences - essence only]
-Source: [where this came from]
+**State inspection:**
+```
+/imlazy:state
+/imlazy:state get current_node
 ```
 
-**Types:**
-- `understanding`: Problem/requirement comprehension
-- `discovery`: Codebase findings
-- `hypothesis`: Proposed solution (includes `MVT_Definition`)
-- `evidence`: Verified facts (includes `MVT_Status`)
-- `gap`: Found missing pieces
-- `loopback`: Mode transition decision (why going back)
-- `escalation`: Blocked, needs user decision
+## Architecture: Six-Node Cognitive Workflow
 
-**Rules:**
-- 1-3 insights per mode (more = not essential)
-- 1-3 sentences per insight (longer = documentation, not insight)
-- Source always required
-- Consolidate when chain exceeds 10 insights
-- Loopback insight required when changing modes backward
+```
+                    ┌──────────────────────────────────────────┐
+                    │                                          │
+                    ▼                                          │
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
+│ PLANNER │───▶│ REASONER│───▶│  CODER  │───▶│VERIFIER │───▶│REFLECTOR│
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
+   (sonnet)      (opus)        (sonnet)       (haiku)        (opus)
+                                                  │
+                                                  ▼
+                                            ┌───────────┐
+                                            │CONSOLIDATOR│
+                                            └───────────┘
+                                               (haiku)
+```
 
-**Persistence:**
-Insights are stored in `~/.imlazy/insight-chain.md` and persist across sessions.
-Use `/imlazy:insight health|view|clear|consolidate` to manage.
+| Node | Purpose | Key Technique |
+|------|---------|---------------|
+| PLANNER | Memory search + problem analysis | AlphaCodium preprocessing |
+| REASONER | Deep deliberation | Tree of Thoughts |
+| CODER | Implementation | Test Anchoring |
+| VERIFIER | Validation | Test execution |
+| REFLECTOR | Self-correction | Reflexion (5 Whys) |
+| CONSOLIDATOR | Memory archival | Experience consolidation |
+
+## CognitiveState Schema
+
+```yaml
+CognitiveState:
+  user_query: string
+  problem_reflection:
+    goal: string
+    inputs: list
+    outputs: list
+    constraints: list
+    edge_cases: list
+  current_plan: list
+  thought_trace: list
+  critiques: list
+  possible_solutions: list
+  selected_solution: string
+  file_context: dict
+  test_results:
+    public_tests: list
+    ai_tests: list
+    anchor_tests: list    # Immutable once verified
+  error_log: list
+  current_node: string    # PLANNER|REASONER|CODER|VERIFIER|REFLECTOR|CONSOLIDATOR
+  retry_count: int
+  max_retries: 3
+  episode_id: string
+  project_hash: string
+```
+
+## Key Mechanisms
+
+### 1. AlphaCodium Preprocessing (PLANNER)
+- Structured problem reflection (goal, inputs, outputs, constraints, edge cases)
+- Generate 2-3 possible solutions with tradeoffs
+- Select best solution with reasoning
+- Generate AI tests for edge cases
+
+### 2. Tree of Thoughts (REASONER)
+- Explore multiple reasoning paths for key decisions
+- Score paths on correctness, simplicity, robustness
+- Select and justify best path
+- Generate detailed implementation plan
+
+### 3. Test Anchoring (CODER)
+- Anchor tests are immutable once verified
+- If any anchor test fails after a change, REVERT immediately
+- New passing tests become anchors
+- Ensures monotonic progress (no regressions)
+
+### 4. Reflexion (REFLECTOR)
+- 5 Whys root cause analysis
+- Self-critique of faulty assumptions
+- Generate specific corrections for PLANNER/REASONER/CODER
+- Route to appropriate node or escalate to user
 
 ## Agent File Format
 
@@ -94,78 +169,48 @@ Each agent is Markdown with YAML frontmatter:
 ---
 name: agent-name
 description: |
-  Multi-line description with examples
+  Multi-line description
 model: sonnet|haiku|opus
 color: terminal-color
 tools: ["Read", "Grep", "Glob", ...]
 ---
 ```
 
-## Key Anti-Patterns to Avoid
+## Routing Rules
 
-When modifying this plugin, avoid:
-- FR-1, NFR-1 numbered requirements
-- Comprehensive design documents before coding
-- "Codebase Overview" sections
-- Template-filling exercises
-- Fixed 5-step sequential workflows
+| Condition | Route To |
+|-----------|----------|
+| VERIFIER passes | CONSOLIDATOR |
+| VERIFIER fails | REFLECTOR |
+| Anchor test violation | REFLECTOR (immediate) |
+| REFLECTOR: simple bug | CODER |
+| REFLECTOR: plan flaw | REASONER |
+| REFLECTOR: problem misunderstood | PLANNER |
+| retry_count >= 3 | User escalation |
 
-**Instead, embrace:**
-- Hypothesis-first thinking
-- Minimal Viable Tests (MVT)
-- Progressive understanding ("enough" ≠ "complete")
-- Error-as-information mindset
-- Adaptive phase skipping/looping
+## Memory System
 
-## MVT (Minimal Viable Test) System
-
-THEORIZE must define an MVT. EXECUTE must verify it before full implementation.
-
-```markdown
-## Insight: [Hypothesis Title]
-Type: hypothesis
-MVT_Definition: [핵심 검증 항목 1줄]
-```
-
-```markdown
-## MVT Checkpoint
-Status: [✓ Passed | ✗ Failed]
-Result: [무엇이 확인되었나]
-Next: [전체 구현 진행 | 가설 재검토]
-```
-
-## Loopback Recording
-
-Mode transitions backward require a loopback insight:
-
-```markdown
-## Insight: [복귀 이유]
-Type: loopback
-From: [현재 모드]
-To: [복귀 모드]
-Reason: [왜 복귀하는지]
-What_Changed: [무엇이 달라지는지]
-```
-
-## Failure Mode Handling
-
-Each agent has defined "Give Up Signals" and "Escalation Paths":
-
-| Agent | Give Up When | Escalation |
-|-------|--------------|------------|
-| ORIENT | 2x questions still unclear | User clarification request |
-| EXPLORE | 3x searches no result | User hint or THEORIZE hypothesis |
-| THEORIZE | All hypotheses high-risk | User risk acceptance |
-| EXECUTE | Same error 3x | Environment check or loopback |
-| VERIFY | 3+ Critical gaps | Full redesign recommendation |
+| Type | Content | Example |
+|------|---------|---------|
+| Working | Current episode state | state.json |
+| Episodic | Past problem-solution pairs | "Fixed login with JWT" |
+| Semantic | Domain knowledge | "Uses Repository pattern" |
+| Procedural | Learned strategies | "Always check null first" |
 
 ## Hooks System
-
-Configured in `hooks/hooks.json`:
 
 | Hook | Trigger | Script |
 |------|---------|--------|
 | SessionStart | Plugin loads | init-session.sh |
-| PreToolUse (Bash) | Before commands | bash-validator.py (blocks dangerous commands) |
-| PreToolUse (Edit/Write) | Before file edits | file-protector.py (protects .env, *.lock) |
-| PostToolUse (Edit/Write) | After file edits | auto-formatter.sh (prettier/black) |
+| PreToolUse (Bash) | Before commands | bash-validator.py |
+| PreToolUse (Edit/Write) | Before file edits | file-protector.py |
+| PostToolUse (Edit/Write) | After file edits | auto-formatter.sh |
+| PostToolUse (Bash) | After commands | reflection-trigger.py |
+
+## Anti-Patterns to Avoid
+
+- Linear waterfall workflows (use cyclic graph instead)
+- Fixed phase sequences (allow skipping REASONER for simple tasks)
+- Manual loopback decisions (use automatic Reflexion)
+- Single memory store (use 4-tier memory system)
+- Template-filling exercises (use hypothesis-driven thinking)
