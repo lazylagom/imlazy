@@ -6,10 +6,7 @@
     "name": "raiz",
     "url": "https://github.com/lazylagom"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lazylagom/imlazy"
-  },
+  "repository": "https://github.com/lazylagom/imlazy",
   "keywords": [
     "workflow",
     "agent",
