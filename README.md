@@ -2,181 +2,218 @@
 
 > **Stay Lazy, Think Crazy**
 
-A cognitive mode-based agent system that thinks like a developer. Claude Code plugin.
+A cognitive agent workflow system for Claude Code. Cyclic architecture with reflexion and memory.
 
 ## Core Philosophy
 
-Instead of traditional SDLC waterfall approaches, this reflects **how developers actually think**:
+Instead of linear workflows, this implements **how agents should think**:
 
-- **Hypothesis-Verification Loop**: Guess, test, fix
-- **Progressive Understanding**: Explore only as much as needed
-- **Adaptive Flow**: Skip/repeat phases based on context
+- **Cyclic Graph**: Failure → Reflect → Retry (not linear waterfall)
+- **Test Anchoring**: Verified tests become immutable anchors
+- **4-Tier Memory**: Learn from past episodes
+- **Reflexion**: Self-correct through 5 Whys analysis
 
 ## Installation
 
 ### Marketplace (Recommended)
 
-In Claude Code:
 ```
-# Add marketplace
 /plugin marketplace add lazylagom/lazy-marketplace
-
-# Install plugin
 /plugin install imlazy
 ```
 
-### Verify Installation
+### Manual
 
-In Claude Code:
+```bash
+git clone https://github.com/lazylagom/imlazy.git ~/.claude/plugins/imlazy
 ```
-# List installed plugins
-/plugin list
+
+### Verify
+
+```
+/imlazy:doctor
 ```
 
 ## Commands
 
-### Automatic Flow
 | Command | Description |
 |---------|-------------|
-| `/imlazy:think <task>` | Adaptive cognitive workflow (recommended) |
+| `/imlazy:think <task>` | Main cognitive workflow |
+| `/imlazy:memory <action>` | Memory search/store/stats |
+| `/imlazy:state [action]` | View/manage cognitive state |
+| `/imlazy:doctor` | Plugin health check |
 
-### Individual Modes
-| Command | Description | Model |
-|---------|-------------|-------|
-| `/imlazy:orient <task>` | Understand problem, form hypotheses | Sonnet |
-| `/imlazy:explore <area>` | Progressive code exploration | Haiku |
-| `/imlazy:theorize <goal>` | Establish solution hypothesis | Opus |
-| `/imlazy:execute <task>` | Step-by-step implementation + verification | Sonnet |
-| `/imlazy:verify <what>` | Validate against original intent | Sonnet |
-
-## Cognitive Mode System
+## Architecture
 
 ```
-ORIENT → EXPLORE → THEORIZE → EXECUTE → VERIFY
-   ↑         ↑         ↑         ↑         ↓
-   └─────────┴─────────┴─────────┴─────────┘
-           (Loop back anytime)
+                    ┌──────────────────────────────────────────┐
+                    │              (on failure)                │
+                    ▼                                          │
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
+│ PLANNER │───▶│ REASONER│───▶│  CODER  │───▶│VERIFIER │───▶│REFLECTOR│
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
+   (sonnet)      (opus)        (sonnet)       (haiku)        (opus)
+                                                  │
+                                                  ▼ (on success)
+                                            ┌───────────┐
+                                            │CONSOLIDATOR│
+                                            └───────────┘
+                                               (haiku)
 ```
 
-### ORIENT (Understand)
-- "What does the user really want?"
-- Form hypotheses, define what success looks like
-- Identify Critical Unknowns
+### Nodes
 
-### EXPLORE (Search)
-- Progressive exploration, only as much as needed
-- Stop when patterns are found
-- Not complete analysis, but sufficient understanding
+| Node | Model | Purpose |
+|------|-------|---------|
+| **PLANNER** | sonnet | Memory retrieval + AlphaCodium problem analysis |
+| **REASONER** | opus | Tree of Thoughts deep reasoning |
+| **CODER** | sonnet | Implementation with test anchoring |
+| **VERIFIER** | haiku | Test execution and validation |
+| **REFLECTOR** | opus | Reflexion self-correction (5 Whys) |
+| **CONSOLIDATOR** | haiku | Archive episode to long-term memory |
 
-### THEORIZE (Hypothesize)
-- "If I do X, Y will happen"
-- Define Minimal Viable Test
-- Prepare alternatives for failure
+### Key Mechanisms
 
-### EXECUTE (Implement)
-- One at a time, verify immediately
-- Error = Information (don't ignore)
-- Return to previous mode when blocked
+**AlphaCodium Preprocessing** (PLANNER)
+- Structured problem reflection
+- Generate 2-3 solutions with tradeoffs
+- Select best approach
 
-### VERIFY (Validate)
-- Compare against ORIENT's "success definition"
-- Adversarial testing (try to break it)
-- Return to EXECUTE when gaps are found
+**Tree of Thoughts** (REASONER)
+- Explore multiple reasoning paths
+- Score on correctness, simplicity, robustness
 
-## Insight Chain
+**Test Anchoring** (CODER)
+- Passed tests become immutable anchors
+- Anchor failure → immediate revert
+- Monotonic progress guaranteed
 
-Pass context between modes with **concise insights**:
+**Reflexion** (REFLECTOR)
+- 5 Whys root cause analysis
+- Self-critique and corrections
+- Smart routing back to appropriate node
 
-```markdown
-## Insight: Session-based auth is suitable
-Type: hypothesis
-Confidence: medium
-Content: Sessions are simpler than JWT. express-session is installed.
-Source: Checked package.json in EXPLORE
+## Memory System
+
+4-tier cognitive memory at `~/.imlazy/`:
+
+| Type | Purpose |
+|------|---------|
+| **Working** | Current episode state |
+| **Episodic** | Past problem-solution pairs |
+| **Semantic** | Domain knowledge, patterns |
+| **Procedural** | Learned strategies, corrections |
+
+```bash
+# Search past experiences
+/imlazy:memory search episodic "authentication"
+
+# View memory stats
+/imlazy:memory stats
 ```
 
-- Maximum 3 sentences per insight
-- Not detailed docs, just the essentials
+## Cognitive State
+
+Track the thinking process:
+
+```bash
+# View full state
+/imlazy:state
+
+# Get specific field
+/imlazy:state get current_node
+/imlazy:state get retry_count
+```
 
 ## Usage Examples
 
-```
-# Automatic flow (recommended)
+```bash
+# Full cognitive workflow
 /imlazy:think add user authentication
 
-# When only exploration is needed
-/imlazy:explore src/auth
+# Check current state
+/imlazy:state
 
-# Just hypothesis building
-/imlazy:theorize caching strategy
-
-# Implementation + verification
-/imlazy:execute add passport.js middleware
-/imlazy:verify authentication feature
+# Search memory
+/imlazy:memory search episodic "login"
 ```
 
 ## Flow Examples
 
 ### Simple Bug Fix
 ```
-ORIENT → EXPLORE → EXECUTE → VERIFY
-(Skip THEORIZE - cause is obvious)
+PLANNER → CODER → VERIFIER → CONSOLIDATOR
+(REASONER skipped - cause is obvious)
 ```
 
-### Complex Feature Addition
+### Complex Feature with Failure
 ```
-ORIENT → EXPLORE → THEORIZE → EXECUTE(fail)
-  → EXPLORE(additional search) → THEORIZE(revise)
-  → EXECUTE → VERIFY
+PLANNER → REASONER → CODER → VERIFIER(fail)
+  → REFLECTOR → CODER(fix) → VERIFIER(pass)
+  → CONSOLIDATOR
+```
+
+### Deep Problem Requiring Reanalysis
+```
+PLANNER → REASONER → CODER → VERIFIER(fail)
+  → REFLECTOR → PLANNER(reanalyze)
+  → REASONER → CODER → VERIFIER(pass)
+  → CONSOLIDATOR
 ```
 
 ## Project Structure
 
 ```
 imlazy/
-├── .claude-plugin/
-│   └── plugin.json
-├── commands/
-│   ├── think.md          # Automatic adaptive flow
-│   ├── orient.md          # Individual modes
-│   ├── explore.md
-│   ├── theorize.md
-│   ├── execute.md
-│   └── verify.md
+├── .claude-plugin/plugin.json
 ├── agents/
-│   ├── orient.md          # Understanding agent
-│   ├── explore.md         # Exploration agent
-│   ├── theorize.md        # Hypothesis agent
-│   ├── execute.md         # Execution agent
-│   └── verify.md          # Verification agent
+│   ├── planner.md
+│   ├── reasoner.md
+│   ├── coder.md
+│   ├── verifier.md
+│   ├── reflector.md
+│   └── consolidator.md
+├── commands/
+│   ├── think.md
+│   ├── memory.md
+│   ├── state.md
+│   └── doctor.md
 ├── skills/
-│   └── insight-chain/     # Insight chain system
+│   ├── cognitive-state/
+│   ├── memory-system/
+│   └── alphacodium-flow/
 └── hooks/
-    ├── hooks.json         # Hook configuration
+    ├── hooks.json
     └── scripts/
-        ├── auto-formatter.sh   # Auto-format on file save
-        ├── bash-validator.py   # Block dangerous commands
-        └── file-protector.py   # Protect sensitive files
+        ├── state-manager.py
+        ├── memory-manager.py
+        ├── reflection-trigger.py
+        ├── bash-validator.py
+        ├── file-protector.py
+        ├── init-session.sh
+        └── auto-formatter.sh
 ```
 
 ## Hooks
 
-Automated safety mechanisms:
+Automated safety and quality:
 
-| Hook | Trigger | Description |
-|------|---------|-------------|
-| **auto-formatter** | PostToolUse | Auto-run prettier/black |
-| **bash-validator** | PreToolUse | Block `rm -rf /`, `git push -f` |
-| **file-protector** | PreToolUse | Block editing `.env`, `*.lock` |
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| **bash-validator** | PreToolUse | Block dangerous commands |
+| **file-protector** | PreToolUse | Protect .env, *.lock |
+| **auto-formatter** | PostToolUse | Run prettier/black |
+| **reflection-trigger** | PostToolUse | Auto-detect test failures |
 
-## vs Traditional SDLC Workflow
+## vs Traditional Approaches
 
-| Traditional | New |
-|-------------|-----|
-| Fixed 5-step sequential execution | Adaptive loopback/skip |
-| Template filling | Actual thought process |
-| Detailed document handoff | Concise insights |
-| FR-1, NFR-1 numbering | Hypotheses and evidence |
+| Traditional | imlazy |
+|-------------|--------|
+| Linear 5-step workflow | Cyclic graph with reflexion |
+| Manual error handling | Automatic REFLECTOR routing |
+| No memory | 4-tier memory system |
+| Single attempt | Up to 3 retries with learning |
+| Template filling | Structured cognitive process |
 
 ## License
 
