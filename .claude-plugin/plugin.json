@@ -1,9 +1,24 @@
 {
   "name": "imlazy",
   "version": "1.0.0",
-  "description": "Adaptive Cognitive Workflow - Cyclic agent workflow with reflexion and memory",
+  "description": "Adaptive Cognitive Workflow - 6-node cyclic agent architecture with AlphaCodium preprocessing, Tree of Thoughts reasoning, test anchoring, Reflexion self-correction, and 4-tier memory system",
   "author": {
-    "name": "raiz"
+    "name": "raiz",
+    "url": "https://github.com/lazylagom"
   },
-  "keywords": ["workflow", "agent", "cognitive", "reflexion", "memory", "alphacodium"]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lazylagom/imlazy"
+  },
+  "keywords": [
+    "workflow",
+    "agent",
+    "cognitive",
+    "reflexion",
+    "memory",
+    "alphacodium",
+    "tree-of-thoughts",
+    "test-anchoring"
+  ],
+  "license": "MIT"
 }
