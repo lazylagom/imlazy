@@ -1,3 +1,9 @@
+---
+name: memory-system
+description: Manage the 4-tier cognitive memory system (working, episodic, semantic, procedural). Use when searching past experiences, storing domain knowledge, recalling patterns, consolidating learnings, managing memory entries, pruning old memories, or understanding memory flow across workflow nodes.
+allowed-tools: Bash, Read
+---
+
 # imlazy 4-Tier Memory System
 
 The memory system implements a cognitive architecture inspired by human memory:
@@ -23,24 +29,28 @@ The memory system implements a cognitive architecture inspired by human memory:
 ## Memory Types
 
 ### Working Memory
+
 - **Purpose**: Current cognitive state
 - **Lifetime**: Single episode
 - **Management**: `state-manager.py`
 - **Location**: `~/.imlazy/working/state.json`
 
 ### Episodic Memory
+
 - **Purpose**: Store past experiences
 - **Content**: Problem-solution pairs, outcomes, thought traces
 - **Use Case**: "I've solved something similar before"
 - **Location**: `~/.imlazy/episodic/*.json`
 
 ### Semantic Memory
+
 - **Purpose**: Domain knowledge and patterns
 - **Content**: Code patterns, architecture decisions, API knowledge
 - **Use Case**: "This codebase uses X pattern"
 - **Location**: `~/.imlazy/semantic/*.json`
 
 ### Procedural Memory
+
 - **Purpose**: Learned methods and corrections
 - **Content**: Strategies, self-corrections from Reflexion
 - **Use Case**: "Last time I made this mistake, I learned..."
@@ -49,6 +59,7 @@ The memory system implements a cognitive architecture inspired by human memory:
 ## Operations
 
 ### Search Memory
+
 ```bash
 # Search episodic memory for similar problems
 python3 hooks/scripts/memory-manager.py search episodic "authentication login"
@@ -61,6 +72,7 @@ python3 hooks/scripts/memory-manager.py search procedural "error handling" --lim
 ```
 
 ### Store Memory
+
 ```bash
 # Store semantic knowledge
 python3 hooks/scripts/memory-manager.py store semantic '{"pattern":"singleton","context":"database connection"}' --tags pattern,database
@@ -70,22 +82,26 @@ python3 hooks/scripts/memory-manager.py store procedural '{"learning":"Always ch
 ```
 
 ### Recall Specific Memory
+
 ```bash
 python3 hooks/scripts/memory-manager.py recall abc123def456
 ```
 
 ### Consolidate Working to Episodic
+
 ```bash
 # Called at end of successful episode
 python3 hooks/scripts/memory-manager.py consolidate
 ```
 
 ### Statistics
+
 ```bash
 python3 hooks/scripts/memory-manager.py stats
 ```
 
 ### Prune Old Memories
+
 ```bash
 # Remove memories older than 30 days with zero access
 python3 hooks/scripts/memory-manager.py prune --days 30
@@ -148,6 +164,7 @@ python3 hooks/scripts/memory-manager.py prune --days 30
 ## Relevance Scoring
 
 Current implementation uses keyword matching. Future improvements:
+
 - Semantic embeddings for better similarity
 - Recency weighting
 - Access frequency boosting

@@ -1,3 +1,9 @@
+---
+name: cognitive-state
+description: Manage and inspect the CognitiveState working memory for cognitive episodes. Use when viewing current workflow state, checking node transitions, inspecting problem reflections, accessing thought traces, managing anchor tests, debugging workflow issues, or understanding the state schema and lifecycle.
+allowed-tools: Bash, Read
+---
+
 # Cognitive State Management
 
 The CognitiveState is the working memory of the imlazy workflow system. It maintains all context needed for the current cognitive episode.
@@ -7,39 +13,39 @@ The CognitiveState is the working memory of the imlazy workflow system. It maint
 ```yaml
 CognitiveState:
   # Task Definition
-  user_query: string           # Original user request
-  problem_reflection:          # AlphaCodium-style preprocessing
-    goal: string               # Single sentence objective
-    inputs: list               # Required inputs
-    outputs: list              # Expected outputs
-    constraints: list          # Constraints and requirements
-    edge_cases: list           # Edge cases to handle
+  user_query: string # Original user request
+  problem_reflection: # AlphaCodium-style preprocessing
+    goal: string # Single sentence objective
+    inputs: list # Required inputs
+    outputs: list # Expected outputs
+    constraints: list # Constraints and requirements
+    edge_cases: list # Edge cases to handle
 
   # Thought Process
-  current_plan: list           # Current execution plan
-  thought_trace: list          # Chain-of-thought log
-  critiques: list              # Self-critiques from Reflexion
-  possible_solutions: list     # Candidate solutions
-  selected_solution: string    # Chosen solution
+  current_plan: list # Current execution plan
+  thought_trace: list # Chain-of-thought log
+  critiques: list # Self-critiques from Reflexion
+  possible_solutions: list # Candidate solutions
+  selected_solution: string # Chosen solution
 
   # Execution Context
-  file_context: dict           # Relevant files and snippets
+  file_context: dict # Relevant files and snippets
   test_results:
-    public_tests: list         # User-provided tests
-    ai_tests: list             # AI-generated edge case tests
-    anchor_tests: list         # Verified tests (immutable)
-  error_log: list              # Errors encountered
+    public_tests: list # User-provided tests
+    ai_tests: list # AI-generated edge case tests
+    anchor_tests: list # Verified tests (immutable)
+  error_log: list # Errors encountered
 
   # Cycle Control
-  current_node: string         # Current workflow node
-  retry_count: int             # Current retry count
-  max_retries: 3               # Maximum retries before escalation
+  current_node: string # Current workflow node
+  retry_count: int # Current retry count
+  max_retries: 3 # Maximum retries before escalation
 
   # Metadata
-  episode_id: string           # Unique episode identifier
-  project_hash: string         # Project identifier
-  created_at: string           # ISO timestamp
-  updated_at: string           # ISO timestamp
+  episode_id: string # Unique episode identifier
+  project_hash: string # Project identifier
+  created_at: string # ISO timestamp
+  updated_at: string # ISO timestamp
 ```
 
 ## Node Transitions
@@ -56,11 +62,13 @@ PLANNER → REASONER → CODER → VERIFIER → CONSOLIDATOR
 ## State Operations
 
 ### Initialize New Episode
+
 ```bash
 python3 hooks/scripts/state-manager.py init
 ```
 
 ### Get State
+
 ```bash
 # Get entire state
 python3 hooks/scripts/state-manager.py dump
@@ -71,6 +79,7 @@ python3 hooks/scripts/state-manager.py get problem_reflection.goal
 ```
 
 ### Update State
+
 ```bash
 # Set simple value
 python3 hooks/scripts/state-manager.py set user_query "Add login feature"
@@ -83,6 +92,7 @@ python3 hooks/scripts/state-manager.py update thought_trace '{"type":"thought","
 ```
 
 ### Node Transitions
+
 ```bash
 python3 hooks/scripts/state-manager.py transition REASONER
 ```
@@ -100,6 +110,7 @@ python3 hooks/scripts/state-manager.py transition REASONER
 ## Anchor Tests
 
 Anchor tests are immutable once verified:
+
 - Start empty
 - When a test passes, it becomes an anchor
 - If any anchor test fails after a code change, the change must be reverted

@@ -1,3 +1,8 @@
+---
+name: alphacodium-flow
+description: AlphaCodium code generation methodology with structured problem analysis, solution generation, and test anchoring. Use when implementing complex features, designing solutions, creating problem reflections, evaluating multiple approaches, generating AI tests, or implementing test-driven development with monotonic progress guarantees.
+---
+
 # AlphaCodium Flow
 
 AlphaCodium is a code generation methodology that emphasizes structured problem analysis and iterative test-driven development.
@@ -20,19 +25,23 @@ The PLANNER agent produces this structured analysis:
 **Goal**: [Single sentence - the core objective]
 
 **Inputs**:
+
 - [Input 1]: [Type and description]
 - [Input 2]: [Type and description]
 
 **Outputs**:
+
 - [Output 1]: [Type and description]
 - [Expected format/structure]
 
 **Constraints**:
+
 - [Technical constraint]
 - [Business rule]
 - [Performance requirement]
 
 **Edge Cases**:
+
 - [Boundary condition 1]
 - [Error scenario 1]
 - [Unusual input 1]
@@ -46,18 +55,21 @@ Generate 2-3 distinct approaches:
 ## Possible Solutions
 
 ### Solution A: [Descriptive Name]
+
 **Approach**: [2-3 sentence description]
 **Key Insight**: [Why this might work]
 **Pros**:
+
 - [Advantage 1]
 - [Advantage 2]
-**Cons**:
+  **Cons**:
 - [Disadvantage 1]
 - [Disadvantage 2]
-**Risk Level**: Low / Medium / High
-**Complexity**: O(n) / O(n log n) / O(n²)
+  **Risk Level**: Low / Medium / High
+  **Complexity**: O(n) / O(n log n) / O(n²)
 
 ### Solution B: [Descriptive Name]
+
 ...
 ```
 
@@ -68,15 +80,16 @@ Evaluate and choose:
 ```markdown
 ## Selection Matrix
 
-| Criterion | Solution A | Solution B | Solution C |
-|-----------|------------|------------|------------|
-| Correctness | 4/5 | 5/5 | 3/5 |
-| Simplicity | 5/5 | 3/5 | 4/5 |
-| Performance | 3/5 | 5/5 | 4/5 |
-| Maintainability | 4/5 | 3/5 | 4/5 |
-| **Total** | 16/20 | 16/20 | 15/20 |
+| Criterion       | Solution A | Solution B | Solution C |
+| --------------- | ---------- | ---------- | ---------- |
+| Correctness     | 4/5        | 5/5        | 3/5        |
+| Simplicity      | 5/5        | 3/5        | 4/5        |
+| Performance     | 3/5        | 5/5        | 4/5        |
+| Maintainability | 4/5        | 3/5        | 4/5        |
+| **Total**       | 16/20      | 16/20      | 15/20      |
 
 ## Selected: Solution A
+
 **Reasoning**: [Why this wins despite tied score, or clear winner reasoning]
 ```
 
@@ -88,18 +101,21 @@ For each identified edge case:
 ## AI-Generated Tests
 
 ### Test 1: Empty Input
+
 **Purpose**: Verify behavior with no data
 **Input**: []
 **Expected Output**: []
 **Rationale**: [Why this case matters]
 
 ### Test 2: Single Element
+
 **Purpose**: Verify minimum valid input
 **Input**: [1]
 **Expected Output**: [1]
 **Rationale**: [Why this case matters]
 
 ### Test 3: Maximum Size
+
 **Purpose**: Verify performance at scale
 **Input**: [1..10000]
 **Expected Output**: [sorted result]
@@ -136,19 +152,20 @@ For each code iteration:
 ## Key Insight: Monotonic Progress
 
 The anchor system ensures:
+
 - **No Regressions**: Can't break what's working
 - **Clear Progress**: Anchor count only increases
 - **Safe Iteration**: Each fix is validated against all previous fixes
 
 ## Integration with imlazy
 
-| imlazy Node | AlphaCodium Phase |
-|------------|-------------------|
-| PLANNER | Problem Reflection, Solution Generation |
-| REASONER | Solution Selection, Test Design |
-| CODER | Implementation, Test Anchoring |
-| VERIFIER | Final Test Execution |
-| REFLECTOR | Failure Analysis, Iteration |
+| imlazy Node | AlphaCodium Phase                       |
+| ----------- | --------------------------------------- |
+| PLANNER     | Problem Reflection, Solution Generation |
+| REASONER    | Solution Selection, Test Design         |
+| CODER       | Implementation, Test Anchoring          |
+| VERIFIER    | Final Test Execution                    |
+| REFLECTOR   | Failure Analysis, Iteration             |
 
 ## Example Flow
 
